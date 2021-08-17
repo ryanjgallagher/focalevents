@@ -1,10 +1,10 @@
 # Social Media Focal Events
 
-The `focalevents` repository makes advanced studies of social media data easier by providing tools that manage the storage and augmentation of data collected around a particular focal event or query.
+`focalevents` makes advanced studies of social media data easier by providing tools that manage the storage and augmentation of data collected around a particular focal event or query on social media.
 
-It is often difficult to organize data from different API queries. For example, we may collect tweets when a hashtag starts trending by using Twitter's filter stream. Later, we may mak separate query to the search endpoint backfill our stream with what we missed before we started it, or update it with tweets that occurred since we stopped the stream. We may also want to get reply threads, quote tweets, or user timelines related to the hashtag's tweets. Each of these datasets is related to a focal event---the hashtag---but they require separate calls to the API. So if thought isn't given beforehand to how the data will be stored, it is easy for these multiple API queries to result in many disjoint files. This makes it difficult to organize, merge, update, backfill, and preprocess them quickly and reliably.
+It is often difficult to organize data from different API queries. For example, we may collect tweets when a hashtag starts trending by using Twitter's filter stream. Later, we may make a separate query to the search endpoint to backfill our stream with what we missed before we started it, or update it with tweets that occurred since we stopped it. We may also want to get reply threads, quote tweets, or user timelines based on the tweets we collected. All of these queries are related to a common focal event—the hashtag—but they require separate many separate calls to the API. It is easy for these multiple API queries to result in many disjoint files, making it difficult to organize, merge, update, backfill, and preprocess them quickly and reliably.
 
-The `focalevents` codebase organizes social media focal event data using PostgreSQL, making it easy to query, backfill, update, sort, and augment the data. For example, collecting Twitter conversations, quotes, or user timelines are all _easy, single line_ commands using `focalevents`, instead of multi-line scripts that need to read IDs, query the API, and output the data. This allows researchers to design more complex studies of social media data and spend more time focusing on data analysis than data storage and maintenance.
+The `focalevents` codebase organizes social media focal event data using PostgreSQL, making it easy to query, backfill, update, sort, and augment the data. For example, collecting Twitter conversations, quotes, or user timelines are all _easy, single line_ commands, instead of a multi-line scripts that need to read IDs, query the API, and output the data. This allows researchers to design more complex studies of social media data, and spend more time focusing on data analysis, rather than data storage and maintenance.
 
 Currently, `focalevents` can be used to collect data from Twitter using the v2 API with academic credentials.
 
@@ -43,8 +43,11 @@ python config.py
 
 ### Creating a Query
 
+All data is organized around an "event name." This name should be a unique signifer for the focal event data that you want to collect. Each query is run using an event query configuration file, which is a YAML file named with the event name.
 
+For example, say we want to search for tweets about Facebook's Oversight Board. Then we might name our event `"facebook_oversight"`. We then need to create the queries that specify exactly which tweets we want from the API. Assuming we are using the default input directory structure (the default in step 3 of the configuration steps above), we will put those queries in the file `input/twitter/search/facebook_oversight.yaml`. If you are not using the default input directory, then `facebook_oversight.yaml` should be put in the custom input directory instead.
 
+The format of the `.yaml` event configuration files depends on the platform and the type of query being done. You can find examples in this repository's [input directory](https://github.com/ryanjgallagher/focalevents/tree/main/input). The queries' syntax follows the rules specified by the platform's API.
 
 
 ### Getting Focal Event Data
