@@ -23,15 +23,15 @@ You will also need to install PostgreSQL and create a database on the computer t
 
 ### Configuration
 
-The configuration file `config.yaml` specifies important information for connecting to different APIs and storing the data. Some of these fields need to be set before starting. Directories, schemas, and tables do not have to already exist when you are specifying them in the configuration file; `config.py` will create them as necessary. The only thing that needs to already exist is the PostgreSQL database.
+The configuration file `config.yaml` specifies important information for connecting to different APIs and storing the data. Some of these fields need to be set before starting.
 
 1. Under the `psql` field, you need to provide information for connecting to the database. At minimum, you need to specify the `database` name and `user` name. If you have altered any of the PostgreSQL defaults, you may also need to enter the `host`, `port`, or `password`. Otherwise, these can be left as `null`.
 
 2. Under `keys`, you need to provide API authorization tokens.
 
-3. Individual event query configuration files are used to set the queries sent to the API (see below for more detail). The `input` field specifies the directories from which those files will be read. This directory defaults to `input` in the `focalevents` directory, but it can be changed to any other directory.
+3. Individual event query configuration files are used to set the queries sent to the API (see below for more detail). The `input` field specifies the directory from which those files will be read. The input directory can be changed or left as the default.
 
-4. Data is stored both in a PostgreSQL database and as raw JSON. The schema and tables used for storing the data in PostgreSQL can be set using the `output.psql` fields. The schema can be changed, but it is suggested to not change the table names from the defaults. For the JSON output, the `output.json` field specifies the directories where the raw JSON will be written. This directory defaults to `output` in the `focalevents` directory, but it can be changed to any other directory.
+4. Data is stored both in a PostgreSQL database and as raw JSON. The name of the schema used for storing the data in PostgreSQL can be set using the `output.psql` fields. The schema can changed or left as the default. The table names should not be changed. For the JSON output, the `output.json` field specifies the directory where the raw JSON will be written. The output directory can be changed or left as the default.
 
 Once the database information, API tokens, and input and output locations are set, go to the `focalevents` folder and run:
 
@@ -39,13 +39,15 @@ Once the database information, API tokens, and input and output locations are se
 python config.py
 ```
 
+This will create all of the necessary directories, schemas, and tables needed for reading and writing data.
+
 ## Usage
 
 ### Creating a Query
 
-All data is organized around an "event name." This name should be a unique signifer for the focal event data that you want to collect. Each query is run using an event query configuration file, which is a YAML file named with the event name.
+**All data is organized around an "event name."** This name should be a unique signifer for the focal event data that you want to collect. Each query is run using an event query configuration file, which is a YAML file named with the event name.
 
-For example, say we want to search for tweets about Facebook's Oversight Board. Then we might name our event `"facebook_oversight"`. We then need to create the queries that specify exactly which tweets we want from the API. Assuming we are using the default input directory structure (the default in step 3 of the configuration steps above), we will put those queries in the file `input/twitter/search/facebook_oversight.yaml`. If you are not using the default input directory, then `facebook_oversight.yaml` should be put in the custom input directory instead.
+For example, say we want to search for tweets about Facebook's Oversight Board. Then we might name our event `"facebook_oversight"`. We then need to create the queries that specify exactly which tweets we want from the API. Assuming we are using the default input directory structure, we will put those queries in the file `input/twitter/search/facebook_oversight.yaml`.
 
 The format of the `.yaml` event configuration files depends on the platform and the type of query being done. You can find examples in this repository's [input directory](https://github.com/ryanjgallagher/focalevents/tree/main/input). The queries' syntax follows the rules specified by the platform's API.
 
@@ -66,4 +68,4 @@ If the event's name is `facebook_oversight`, then we can run a basic Twitter sea
 python -m twitter.search facebook_oversight
 ```
 
-For details on what tools and options are available for Twitter specifically and examples of how to use them, see [here]().
+For details on what tools and options are available for collecting Twitter data and examples of how to use them, see [here](https://github.com/ryanjgallagher/focalevents/tree/main/twitter).
