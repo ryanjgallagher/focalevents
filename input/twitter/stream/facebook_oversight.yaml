@@ -1,0 +1,21 @@
+---
+
+rules:
+    - value: '"oversight board" OR (((oversight board) OR ob OR "The Board" OR #oversightboard OR #facebookoversightboard) (facebook OR fb OR zuckerberg)) lang:en -is:nullcast'
+      tag: "Refers to Facebook Oversight Board"
+    - value: "@OversightBoard lang:en -is:nullcast"
+      tag: "Mentions Facebook Oversight Board account"
+    - value: '((oversight board) OR ob OR "The Board" OR #oversightboard OR #facebookoversightboard) trump lang:en -is:nullcast'
+      tag: "Refers to Oversight Board and Trump"
+    - value: "(facebook OR fb OR zuckerberg) trump (decision OR ban OR banning OR banned OR bans suspension OR suspended OR suspending OR suspensions OR deplatform OR deplatforming OR deplatformed) lang:en -is:nullcast"
+      tag: "Refers to Facebook, Trump, and the ban/decision"
+    - value: '(facebook OR fb) trump ("community guidelines" OR "ToS" OR "terms of service" OR "content moderation") lang:en -is:nullcast'
+      tag: "Refers to Facebook, Trump, and FB's guidelines"
+    - value: '(facebook OR fb) trump (("jan 6" OR "january 6" OR "jan 6th" OR "january 6th") OR ((capitol OR capital) (insurrection OR insurrectionists OR terrorists OR riot OR riots OR uprising OR protest OR protests OR storming))) lang:en -is:nullcast'
+      tag: "Refers to Facebook, Trump and the insurrection"
+    - value: '(facebook OR fb) trump "A total disgrace" lang:en -is:nullcast'
+      tag: "Refers to Facebook and Trump's quoted reaction to the ban"
+    - value: 'trump ("social media" OR "private company" OR "private corporation" OR "private business" OR "big tech" OR "bigtech") ("free speech" OR "1st amendment" OR "first amendment") lang:en -is:nullcast'
+      tag: "Refers to general talk about Trump, free speech, and social media"
+    - value: '(facebook OR fb) ("free speech" OR "1st amendment" OR "first amendment") lang:en -is:nullcast'
+      tag: "Refers to Facebook and free speech"

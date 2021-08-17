@@ -1,0 +1,14 @@
+---
+
+queries:
+    - '"oversight board" OR (((oversight board) OR ob OR "The Board" OR #oversightboard OR #facebookoversightboard) (facebook OR fb OR zuckerberg)) lang:en'
+    - "@OversightBoard lang:en"
+    - '((oversight board) OR ob OR "The Board" OR #oversightboard OR #facebookoversightboard) trump lang:en'
+    - "(facebook OR fb OR zuckerberg) trump (decision OR ban OR banning OR banned OR bans suspension OR suspended OR suspending OR suspensions OR deplatform OR deplatforming OR deplatformed) lang:en"
+    - '(facebook OR fb) trump ("community guidelines" OR "ToS" OR "terms of service" OR "content moderation") lang:en'
+    - '(facebook OR fb) trump (("jan 6" OR "january 6" OR "jan 6th" OR "january 6th") OR ((capitol OR capital) (insurrection OR insurrectionists OR terrorists OR riot OR riots OR uprising OR protest OR protests OR storming))) lang:en'
+    - '(facebook OR fb) trump "A total disgrace" lang:en'
+    - 'trump ("social media" OR "private company" OR "private corporation" OR "private business" OR "big tech" OR "bigtech") ("free speech" OR "1st amendment" OR "first amendment") lang:en'
+    - '(facebook OR fb) ("free speech" OR "1st amendment" OR "first amendment") lang:en'
+start_time: '2021-05-05T11:30:00.00Z'
+end_time: '2021-05-05T12:00:00.00Z'

@@ -1,0 +1,215 @@
+---
+
+# Database info
+psql:
+    host: null
+    port: null
+    user: ""
+    database: ""
+    password: null
+# Directories of input for running API queries, i.e. event config files
+input:
+    twitter:
+        stream: "input/twitter/stream"
+        search: "input/twitter/search"
+# Directories of output, mainly JSON files
+output:
+    json:
+        twitter:
+            stream: "output/twitter/stream"
+            search: "output/twitter/search"
+    psql:
+        twitter:
+            schema: "twitter"
+            tables:
+                tweets: "tweets"
+                users: "users"
+                media: "media"
+                places: "places"
+# Keys for accessing the Twitter API v2
+keys:
+    twitter:
+        api_key: ""
+        api_secret_key: ""
+        bearer_token: ""
+# Endpoints for APIs
+endpoints:
+    twitter:
+        rules: "https://api.twitter.com/2/tweets/search/stream/rules"
+        stream: "https://api.twitter.com/2/tweets/search/stream"
+        search: "https://api.twitter.com/2/tweets/search/all"
+        user: "https://api.twitter.com/2/users"
+        users_lookup: "https://api.twitter.com/2/users/by"
+# Rate limits on the number of calls per 15 mins
+rate_limits:
+    twitter:
+        search: 300
+        timelines: 1500
+# Twitter expansions
+expansions:
+    - "author_id"
+    - "referenced_tweets.id"
+    - "referenced_tweets.id.author_id"
+    - "entities.mentions.username"
+    - "geo.place_id"
+    - "attachments.media_keys"
+# Data fields that we request for different API objects
+request_fields:
+    twitter:
+        tweets:
+            - "author_id"
+            - "conversation_id"
+            - "created_at"
+            - "in_reply_to_user_id"
+            - "lang"
+            - "possibly_sensitive"
+            - "public_metrics"
+            - "referenced_tweets"
+            - "reply_settings"
+            - "source"
+            - "entities"
+            - "attachments"
+            - "geo"
+        users:
+            - "name"
+            - "username"
+            - "created_at"
+            - "description"
+            - "location"
+            - "public_metrics"
+            - "url"
+            - "verified"
+            - "pinned_tweet_id"
+            - "profile_image_url"
+            - "entities"
+        media:
+            - "duration_ms"
+            - "height"
+            - "width"
+            - "preview_image_url"
+            - "public_metrics"
+        places:
+            - "contained_within"
+            - "country"
+            - "country_code"
+            - "geo"
+            - "name"
+            - "place_type"
+# Data fields that we insert/store into the database for different API objects
+insert_fields:
+    twitter:
+        tweets:
+            id: "TEXT"
+            event: "TEXT"
+            inserted_at: "TIMESTAMPTZ"
+            last_updated_at: "TIMESTAMPTZ"
+            from_search: "BOOLEAN"
+            directly_from_search: "BOOLEAN"
+            from_stream: "BOOLEAN"
+            directly_from_stream: "BOOLEAN"
+            from_convo_search: "BOOLEAN"
+            directly_from_convo_search: "BOOLEAN"
+            from_quote_search: "BOOLEAN"
+            directly_from_quote_search: "BOOLEAN"
+            from_timeline_search: "BOOLEAN"
+            directly_from_timeline_search: "BOOLEAN"
+            text: "TEXT"
+            lang: "TEXT"
+            author_id: "TEXT"
+            author_handle: "TEXT"
+            created_at: "TIMESTAMPTZ"
+            conversation_id: "TEXT"
+            possibly_sensitive: "BOOLEAN"
+            reply_settings: "TEXT"
+            source: "TEXT"
+            author_follower_count: "INTEGER"
+            retweet_count: "INTEGER"
+            reply_count: "INTEGER"
+            like_count: "INTEGER"
+            quote_count: "INTEGER"
+            replied_to: "TEXT"
+            replied_to_author_id: "TEXT"
+            replied_to_handle: "TEXT"
+            replied_to_follower_count: "INTEGER"
+            quoted: "TEXT"
+            quoted_author_id: "TEXT"
+            quoted_handle: "TEXT"
+            quoted_follower_count: "INTEGER"
+            retweeted: "TEXT"
+            retweeted_author_id: "TEXT"
+            retweeted_handle: "TEXT"
+            retweeted_follower_count: "INTEGER"
+            mentioned_author_ids: "TEXT[]"
+            mentioned_handles: "TEXT[]"
+            hashtags: "TEXT[]"
+            urls: "JSONB[]"
+            media_keys: "TEXT[]"
+            place_id: "TEXT"
+        users:
+            id: "TEXT"
+            event: "TEXT"
+            inserted_at: "TIMESTAMPTZ"
+            last_updated_at: "TIMESTAMPTZ"
+            name: "TEXT"
+            username: "TEXT"
+            created_at: "TIMESTAMPTZ"
+            description: "TEXT"
+            location: "TEXT"
+            pinned_tweet_id: "TEXT"
+            followers_count: "INTEGER"
+            following_count: "INTEGER"
+            tweet_count: "INTEGER"
+            url: "TEXT"
+            profile_image_url: "TEXT"
+            description_urls: "JSONB[]"
+            description_hashtags: "TEXT[]"
+            description_mentions: "TEXT[]"
+            verified: "BOOLEAN"
+        media:
+            id: "TEXT"
+            event: "TEXT"
+            inserted_at: "TIMESTAMPTZ"
+            last_updated_at: "TIMESTAMPTZ"
+            type: "TEXT"
+            duration_ms: "INTEGER"
+            height: "INTEGER"
+            width: "INTEGER"
+            preview_image_url: "TEXT"
+            view_count: "INTEGER"
+        places:
+            id: "TEXT"
+            event: "TEXT"
+            inserted_at: "TIMESTAMPTZ"
+            last_updated_at: "TIMESTAMPTZ"
+            name: "TEXT"
+            full_name: "TEXT"
+            country: "TEXT"
+            country_code: "TEXT"
+            geo: "JSONB"
+            place_type: "TEXT"
+# Fields to update when doing database insertion
+update_fields:
+    twitter:
+        tweets:
+            - "last_updated_at"
+            - "author_follower_count"
+            - "retweet_count"
+            - "reply_count"
+            - "like_count"
+            - "quote_count"
+            - "replied_to"
+            - "replied_to_author_id"
+            - "replied_to_follower_count"
+            - "quoted"
+            - "quoted_author_id"
+            - "quoted_follower_count"
+        users:
+            - "last_updated_at"
+            - "followers_count"
+            - "following_count"
+            - "tweet_count"
+        media:
+            - "last_updated_at"
+            - "view_count"
+        places:
+            - "last_updated_at"
