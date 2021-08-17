@@ -10,7 +10,7 @@ from psycopg2.extras import Json
 # ------------------------------------------------------------------------------
 # ------------------------- Database / writing functions -----------------------
 # ------------------------------------------------------------------------------
-def get_update_cmd(update_fields, query_type):
+def get_update_cmd(update_fields, query_type, insert_type):
     """
     Creates the update command to use with an insertion to a PostgreSQL database,
     given the fields to be updated
@@ -21,9 +21,11 @@ def get_update_cmd(update_fields, query_type):
         Fields that will be updated
     query_type: str
         The type of event query being run: "search", "stream", "convo_search",
-        or "timeline_search"
+        "quote_search" ,or "timeline_search"
+    insert_type: str
+        The type of insertion being done: "tweets", "users", "media", "places"
     """
-    if query_type == 'tweets':
+    if query_type != 'stream' and insert_type == 'tweets':
         update_fields.append(f"from_{query_type}")
         update_fields.append(f"directly_from_{query_type}")
 

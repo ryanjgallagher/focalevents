@@ -390,7 +390,7 @@ class SearchListener(APIListener):
             elif self.start_time == 'last_time':
                 start_datetime = self.last_time
             else:
-                start_datetime = dateparser.parse(start_time)
+                start_datetime = dateparser.parse(self.start_time)
             start_datetime =  start_datetime - timedelta(self.n_days_back)
             self.params['start_time'] = start_datetime.strftime(date_format)
         elif self.backfill:

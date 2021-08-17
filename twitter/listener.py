@@ -90,7 +90,7 @@ class APIListener():
             self.insert_fields[insert_type] = insert_fields
             table = self.tables[insert_type]
 
-            update_cmd = get_update_cmd(update_fields, self.query_type)
+            update_cmd = get_update_cmd(update_fields, self.query_type, insert_type)
             insert_cmd,template = get_insert_cmd(insert_fields, table, update_cmd)
             self.insert_cmds[insert_type] = insert_cmd
             self.templates[insert_type] = template
@@ -287,14 +287,6 @@ class APIListener():
         # Write to database
         insert_types = ['tweets', 'ref', 'users', 'media', 'places']
         for insert_type,inserts in zip(insert_types, all_inserts):
-            # Subset to insert fields
-            # TODO: this is not efficient to do this every time
-            insert_fields = self.insert_fields[insert_type]
-            for insert in inserts:
-                for k in list(insert.keys()):
-                    if k not in insert_fields:
-                        del insert[k]
-
             # Insert
             template = self.templates[insert_type]
             insert_cmd = self.insert_cmds[insert_type]
@@ -310,6 +302,8 @@ class APIListener():
                 print()
                 print(f"Insert command\n{insert_cmd}\n")
                 print(f"Template\n{template}\n")
+                print(f"{insert_type}\n")
+                print()
                 raise e
 
         # Write to JSON
