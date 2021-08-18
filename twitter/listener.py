@@ -223,7 +223,7 @@ class APIListener():
         n_calls_remaining = self.rate_limit - self.n_calls_last_15mins
         if n_secs_remaining > 0 and n_calls_remaining > 0:
             n_sleep_secs = n_secs_remaining / n_calls_remaining
-            if self.query_type == 'search':
+            if self.query_type != 'stream':
                 # Full archive search has minimum 1 request / sec limit too
                 n_sleep_secs = max(1, n_sleep_secs)
             time.sleep(n_sleep_secs)

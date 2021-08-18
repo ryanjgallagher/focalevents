@@ -272,6 +272,7 @@ if __name__ == '__main__':
     parser.add_argument("--update_rules", dest="delete_rules", action="store_false")
     parser.add_argument("--append", dest="append", action="store_true")
     parser.add_argument("--verbose", dest="verbose", action="store_true")
+    parser.add_argument("--quiet", dest="verbose", action="store_false")
     parser.add_argument("--overwrite", dest="append", action="store_false")
     parser.add_argument("--dry_run", dest="dry_run", action="store_true")
     parser.set_defaults(delete_rules=True, append=True, dry_run=False)

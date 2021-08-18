@@ -1,12 +1,10 @@
 # Social Media Focal Events
 
-`focalevents` makes advanced studies of social media data easier by providing tools that manage the storage and augmentation of data collected around a particular focal event or query on social media.
+This repository provides tools that make advanced studies of social media data easier by managing the storage and augmentation of data collected around a particular focal event or query on social media. Currently, `focalevents` supports data collection from Twitter using the v2 API with academic credentials.
 
-It is often difficult to organize data from different API queries. For example, we may collect tweets when a hashtag starts trending by using Twitter's filter stream. Later, we may make a separate query to the search endpoint to backfill our stream with what we missed before we started it, or update it with tweets that occurred since we stopped it. We may also want to get reply threads, quote tweets, or user timelines based on the tweets we collected. All of these queries are related to a common focal event—the hashtag—but they require separate many separate calls to the API. It is easy for these multiple API queries to result in many disjoint files, making it difficult to organize, merge, update, backfill, and preprocess them quickly and reliably.
+It is often difficult to organize data from multiple API queries. For example, we may collect tweets when a hashtag starts trending by using Twitter's filter stream. Later, we may make a separate query to the search endpoint to backfill our stream with what we missed before we started it, or update it with tweets that occurred since we stopped it. We may also want to get reply threads, quote tweets, or user timelines based on the tweets we collected. All of these queries are related to a common focal event—the hashtag—but they require several separate calls to the API. It is easy for these multiple queries to result in many disjoint files, making it difficult to organize, merge, update, backfill, and preprocess them quickly and reliably.
 
 The `focalevents` codebase organizes social media focal event data using PostgreSQL, making it easy to query, backfill, update, sort, and augment the data. For example, collecting Twitter conversations, quotes, or user timelines are all _easy, single line_ commands, instead of a multi-line scripts that need to read IDs, query the API, and output the data. This allows researchers to design more complex studies of social media data, and spend more time focusing on data analysis, rather than data storage and maintenance.
-
-Currently, `focalevents` can be used to collect data from Twitter using the v2 API with academic credentials.
 
 ## Getting Started
 
@@ -29,11 +27,7 @@ The configuration file `config.yaml` specifies important information for connect
 
 2. Under `keys`, you need to provide API authorization tokens.
 
-3. Individual event query configuration files are used to set the queries sent to the API (see below for more detail). The `input` field specifies the directory from which those files will be read. The input directory can be changed or left as the default.
-
-4. Data is stored both in a PostgreSQL database and as raw JSON. The name of the schema used for storing the data in PostgreSQL can be set using the `output.psql` fields. The schema can changed or left as the default. The table names should not be changed. For the JSON output, the `output.json` field specifies the directory where the raw JSON will be written. The output directory can be changed or left as the default.
-
-Once the database information, API tokens, and input and output locations are set, go to the `focalevents` folder and run:
+Once the database information and API tokens are set, go to the `focalevents` folder and run:
 
 ```
 python config.py
@@ -45,27 +39,19 @@ This will create all of the necessary directories, schemas, and tables needed fo
 
 ### Creating a Query
 
-**All data is organized around an "event name."** This name should be a unique signifer for the focal event data that you want to collect. Each query is run using an event query configuration file, which is a YAML file named with the event name.
+**All data is organized around an "event name."** This name should be a unique signifer for the focal event around which want to collect data.
 
-For example, say we want to search for tweets about Facebook's Oversight Board. Then we might name our event `"facebook_oversight"`. We then need to create the queries that specify exactly which tweets we want from the API. Assuming we are using the default input directory structure, we will put those queries in the file `input/twitter/search/facebook_oversight.yaml`.
+Each query is run using an event query configuration file, which is a YAML file named with the event name. For example, say we want to search for tweets about Facebook's Oversight Board. Then we can name our event `"facebook_oversight"`. The specific queries to the Twitter API are specified the event configuration file `input/twitter/search/facebook_oversight.yaml`.
 
-The format of the `.yaml` event configuration files depends on the platform and the type of query being done. You can find examples in this repository's [input directory](https://github.com/ryanjgallagher/focalevents/tree/main/input). The queries' syntax follows the rules specified by the platform's API.
+The format of the `.yaml` event configuration files depends on the platform and the type of query being done. You can find examples in this repository's [input directory](https://github.com/ryanjgallagher/focalevents/tree/main/input). The syntax for Twitter queries follows the API's operators ([stream](https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/integrate/build-a-rule), [search](https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query))
 
 
 ### Getting Focal Event Data
 
-Once the focal event's query configuration file is set, you are ready to run it. All queries are
-
-1. Run using Python at the command line using the `-m` option
-
-2. Run from the `focalevents` directory
-
-3. Specified using the event name used to name the configuration file
-
-If the event's name is `facebook_oversight`, then we can run a basic Twitter search by going to the`focalevents` directory and entering:
+Once the focal event's query configuration file is set, you are ready to run it! All queries are run using Python at the command line using the `-m` flag. For example, if the event's name is `facebook_oversight`, then we can run a basic Twitter search by going to the`focalevents` directory and entering:
 
 ```
 python -m twitter.search facebook_oversight
 ```
 
-For details on what tools and options are available for collecting Twitter data and examples of how to use them, see [here](https://github.com/ryanjgallagher/focalevents/tree/main/twitter).
+For details on collecting Twitter data, see [here](https://github.com/ryanjgallagher/focalevents/tree/main/twitter).

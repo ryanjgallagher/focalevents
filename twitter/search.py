@@ -619,6 +619,7 @@ if __name__ == '__main__':
     parser.add_argument("--backfill", dest="backfill", action="store_true")
     parser.add_argument("--append", dest="append", action="store_true")
     parser.add_argument("--verbose", dest="verbose", action="store_true")
+    parser.add_argument("--quiet", dest="verbose", action="store_false")
     parser.add_argument("--overwrite", dest="append", action="store_false")
     parser.set_defaults(get_convos=False, get_quotes=False, get_timelines=False,
                         get_quotes_of_quotes=False, append=True, verbose=True,
