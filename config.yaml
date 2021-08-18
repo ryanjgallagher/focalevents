@@ -7,6 +7,12 @@ psql:
     user: ""
     database: ""
     password: null
+# Keys for accessing the Twitter API v2
+keys:
+    twitter:
+        api_key: ""
+        api_secret_key: ""
+        bearer_token: ""
 # Directories of input for running API queries, i.e. event config files
 input:
     twitter:
@@ -26,12 +32,6 @@ output:
                 users: "users"
                 media: "media"
                 places: "places"
-# Keys for accessing the Twitter API v2
-keys:
-    twitter:
-        api_key: ""
-        api_secret_key: ""
-        bearer_token: ""
 # Endpoints for APIs
 endpoints:
     twitter:
