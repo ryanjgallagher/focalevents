@@ -6,9 +6,9 @@ The following data can be collected around a focal event on Twitter:
 
 - Tweets from the filter stream
 - Tweets from the full-archive search
-- Conversation reply threads from tweets collected from a focal event stream and/or search
+- Conversation reply threads from tweets collected from a focal event stream/search
 - Quote tweets quoting any tweets collected from a focal event search ([not needed for stream tweets](https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query#quote-tweets))
--  User timelines of users who tweeted during a focal event stream and/or search
+-  User timelines of users who tweeted during a focal event stream/search
 
 In addition, there are tools for easily updating and backfilling any of the above queries (except quote tweets). All of the data is linked through the `event` field in the PostgreSQL tables (see below for details on table organization).
 
@@ -23,13 +23,13 @@ Once the event configuration file is ready, the command for streaming tweets is
 python -m twitter.stream event_name
 ```
 
-There are some convenience options that can be set, which are documented [here](https://github.com/ryanjgallagher/focalevents/blob/main/twitter/stream.py). For example, we can run a "dry run" to test the rules by using the command:
+There are some convenience options that can be set, which are documented [here](https://github.com/ryanjgallagher/focalevents/blob/main/twitter/stream.py). For example, we can run a "dry run" to test the rules without actually connecting to the stream by using the command:
 
 ```
 python -m twitter.stream event_name --dry_run
 ```
 
-Or we can change how often updates about the stream are printed using the `update_interval` flag so that updates are printed every 5 minutes:
+Or we can change how often updates about the stream are printed using the `update_interval` flag so that they are printed every 5 minutes instead of 15:
 
 ```
 python -m twitter.stream event_name -update_interval 5
@@ -49,18 +49,19 @@ Once the event configuration file is ready, the command for streaming tweets is
 python -m twitter.search event_name
 ```
 
+The search can be cancelled at any time with `CTRL+C`.
 
 ### Updates and Backfills
 
 Once a search or stream has been run around a focal event, it is easy to update or backfill the tweets with additional data.
 
-The focal event can be updated with all the tweets that have occurred since the stream or search was run. To do this, use the `--update` flag
+The focal event can be updated with all the tweets that have occurred since the stream/search was run. To do this, use the `update` flag
 
 ```
 python -m twitter.search event_name --update
 ```
 
-By default, the update looks at the last focal event tweet that came from the prior stream and/or search and gets all tweets that occurred from then to now. To change when the update ends, we can use the `end_time` parameter. A specific time can be passed to the `end_time`, and the update will run from the last search/stream tweet to that time. For example, if we want to run our update until 11am UTC on August 18th, 2021, then we would enter
+By default, the update looks at the last focal event tweet that came from the prior stream/search and gets all tweets that occurred from then to the moment of running the update. To change when the update ends, we can use the `end_time` parameter. A specific time can be passed to the `end_time`, and the update will run from the last search/stream tweet to that time. For example, if we want to run our update until 11am UTC on August 18th, 2021, then we would enter
 
 ```
 python -m twitter.search event_name --update -end_time 2021-08-18T11:00:00.00Z
@@ -72,7 +73,7 @@ Note, all time parameters need to be RFC 3339 format, e.g. YYYY-MM-DDT00:00:00.0
 python -m twitter.search event_name --update -end_time last_time -n_days_after 3
 ```
 
-In addition to updating our dataset, we can also backfill it with tweets that occurred before we ran our search and/or stream. By default the backfill runs from the beginning of the day of the earliest tweeet from the prior search/stream until the time of that tweet. We can run that basic backfill as
+In addition to updating our dataset, we can also backfill it with tweets that occurred before we ran our search and/or stream. By default the backfill runs from the beginning of the day of the earliest tweet from the prior search/stream until the time of that tweet. We can run that basic backfill as
 
 ```
 python -m twitter.search event_name --backfill
@@ -93,13 +94,13 @@ Reply threads of tweets from a focal event, quote tweets that quote focal event 
 python -m twitter.search event_name --get_convos
 ```
 
-The **conversation search** and **quote search** default to collecting reply threads and quotes that occurred between the first and last search/stream tweets. In other words, `start_time` defaults to `first_time` and `end_time` defaults to `last_time`. If we wanted to get, for example, all of the replies that occurred during the focal event and 2 days after the focal event, then we can use the `end_time` parameter in the same way that was described above:
+The **conversation search** and **quote search** default to collecting reply threads and quotes that occurred between the first and last search/stream tweets. In other words, `start_time` defaults to `first_time` and `end_time` defaults to `last_time`. If we wanted to get, for example, all of the replies that occurred during the focal event and 2 days after the focal event, then we can use the `end_time` parameter to change when the search ends:
 
 ```
 python -m twitter.search event_name --get_convos -end_time last_time -n_days_after 2
 ```
 
-The **timeline search** defaults to collecting user timelines from 14 days _before_ the focal event to the time of the last tweet of the focal event, i.e. `start_time` defaults to `first_time` with `n_days_back` as 14, and `end_time` defaults to `last_time`. The parameters `start_time`, `n_days_back`, `end_time`, and `n_days_after` can be used in any combination to set other timeline search defaults. There is also a flag `full_timelines` if you want to collect all of the focal event users' tweets. Note, because user timelines are collected using the full-archive search, these are _full_ user timelines, not just the most recent 3,200 user tweets, as was the case when using the user timeline endpoint for v1 and v2 of Twitter's API.
+The **timeline search** defaults to collecting user timelines from 14 days _before_ the focal event to the time of the last tweet of the focal event, i.e. `start_time` defaults to `first_time` with `n_days_back` as 14, and `end_time` defaults to `last_time`. The parameters `start_time`, `n_days_back`, `end_time`, and `n_days_after` can be used in any combination to set other timeline search ranges. There is also a flag `full_timelines` if you want to collect all of the focal event users' tweets. Note, because user timelines are collected using the full-archive search, these are _full_ user timelines, not just the most recent 3,200 user tweets, as was the case when using the user timeline endpoint for v1 and v2 of Twitter's API.
 
 ```
 python -m twitter.search event_name --get_timelines --full_timelines
@@ -125,7 +126,7 @@ Because these are standalone searches, the `start_time` and `end_time` have to b
 
 ### Tables and Fields
 
-Regardless of the query, data from the tweets, users, media, and places are stored in the PostgreSQL database. They are available under the `twitter` schema in the tables `tweets`, `users`, `media`, and `places`. Each row is uniquely identified by the `id` of the object and the `event` name of the focal event.
+Regardless of the query, data from tweets, users, media, and places are stored in the PostgreSQL database. They are available under the `twitter` schema in the tables `tweets`, `users`, `media`, and `places`. Each row is uniquely identified by the `id` of the object and the `event` name of the focal event.
 
 The following additional [fields](https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/tweet) are stored for tweets (along with the `from_*` and `directly_from_*` fields described below).
 - `text`
@@ -178,7 +179,7 @@ The following [fields](https://developer.twitter.com/en/docs/twitter-api/data-di
 - `description_mentions`
 - `verified`
 
-The following fields are stored for [media](https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/media).
+The following [fields](https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/media) are stored for media.
 - `type`
 - `duration_ms`
 - `height`
@@ -186,7 +187,7 @@ The following fields are stored for [media](https://developer.twitter.com/en/doc
 - `preview_image_url`
 - `view_count`
 
-The following fields are stored for [places](https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/place). Place objects returned by the API are assumed to be static and so they are not indexed by `event` (i.e. there is no `event` field).
+The following [fields](https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/place) are stored for places. Place objects returned by the API are assumed to be static and so they are not indexed by `event` (i.e. there is no `event` field).
 - `name`
 - `full_name`
 - `country`

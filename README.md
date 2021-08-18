@@ -43,12 +43,12 @@ This will create all of the necessary directories, schemas, and tables needed fo
 
 Each query is run using an event query configuration file, which is a YAML file named with the event name. For example, say we want to search for tweets about Facebook's Oversight Board. Then we can name our event `"facebook_oversight"`. The specific queries to the Twitter API are specified the event configuration file `input/twitter/search/facebook_oversight.yaml`.
 
-The format of the `.yaml` event configuration files depends on the platform and the type of query being done. You can find examples in this repository's [input directory](https://github.com/ryanjgallagher/focalevents/tree/main/input). The syntax for Twitter queries follows the API's operators ([stream](https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/integrate/build-a-rule), [search](https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query))
+The format of the `.yaml` event configuration files depends on the platform and the type of query being done. You can find examples in this repository's [input directory](https://github.com/ryanjgallagher/focalevents/tree/main/input). The syntax for Twitter queries follows the API's operators ([stream](https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/integrate/build-a-rule), [search](https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query)).
 
 
 ### Getting Focal Event Data
 
-Once the focal event's query configuration file is set, you are ready to run it! All queries are run using Python at the command line using the `-m` flag. For example, if the event's name is `facebook_oversight`, then we can run a basic Twitter search by going to the`focalevents` directory and entering:
+Once the focal event's query configuration file is set, you are ready to run it! All queries are run using Python at the command line with the `-m` flag. For example, if the event's name is `facebook_oversight`, then we can run a basic Twitter search by going to the`focalevents` directory and entering:
 
 ```
 python -m twitter.search facebook_oversight
