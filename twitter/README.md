@@ -23,25 +23,12 @@ Once the event configuration file is ready, the command for streaming tweets is
 python -m twitter.stream event_name
 ```
 
-There are some convenience options that can be set, which are documented [here](https://github.com/ryanjgallagher/focalevents/blob/main/twitter/stream.py). For example, we can run a "dry run" to test the rules without actually connecting to the stream by using the command:
-
-```
-python -m twitter.stream event_name --dry_run
-```
-
-Or we can change how often updates about the stream are printed using the `update_interval` flag so that they are printed every 5 minutes instead of 15:
-
-```
-python -m twitter.stream event_name -update_interval 5
-```
-
 The stream can be cancelled at any time with `CTRL+C`.
 
 
 ## Collecting Data from Searches
 
 All other Twitter data is collected as a type of search. Like the stream, the search needs to be specified using an [event configuration file](https://github.com/ryanjgallagher/focalevents) using Twitter's [search syntax](https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query). See an example [here](https://github.com/ryanjgallagher/focalevents/blob/main/input/twitter/search/facebook_oversight.yaml), and note that the search configuration format is different than the stream configuration format.
-
 
 Once the event configuration file is ready, the command for streaming tweets is
 
@@ -50,6 +37,24 @@ python -m twitter.search event_name
 ```
 
 The search can be cancelled at any time with `CTRL+C`.
+
+
+### Counting
+
+It can be helpful to know how many tweets will be returned from a search before running it so that you can be prepared to store them and not exceed the monthly tweet quota. To estimate the number of tweets that will be returned without actually running the search, use the `get_counts` flag:
+
+```
+python -m twitter.search event_name --get_counts
+```
+
+This accesses Twitter's [count endpoint](https://developer.twitter.com/en/docs/twitter-api/tweets/counts/api-reference/get-tweets-counts-all) and returns time series count data in JSON files in the `output` directory. If you have more than one query, then there will be one file per query, numbered in the same order that they appear in the input query file. For a standard search, these files are written out by default. If you do not want them written out, and only want the console to print the number of estimated tweets, then you can use the `no_count_files` flag. For timeline, conversation, and quote searches (see below for more details), count files are not written out by default because they can potentially produce many files that are not well ordered (unless using an input ID file). If you would still like to return the files, use the `write_count_files` flag.
+
+You can set the granularity of the time series count data to be `minute`, `hour`, or `day`:
+
+```
+python -m twitter.search event_name --get_counts -granularity hour
+```
+
 
 ### Updates and Backfills
 
@@ -205,6 +210,6 @@ The `tweets` table distinguishes between tweets that are returned directly in re
 - `from_convo_search`, `directly_from_convo_search`
 - `from_timeline_search`, `directly_from_timeline_search`
 
-_All_ tweet that were returned by a particular query, referenced or not, will be marked as `True` in the `from_*` field (where `*` is any of the query types above). Any tweet that was returned _directly_ by a query (i.e. it is not just a referenced tweet) will be marked as `True` in the `directly_from_*` field. Tweets that are only referenced tweets then can be identified by looking for rows where `from_* AND NOT directly_from_*`.
+_All_ tweets that were returned by a particular query, referenced or not, will be marked as `True` in the `from_*` field (where `*` is any of the query types above). Any tweet that was returned _directly_ by a query (i.e. it is not just a referenced tweet) will be marked as `True` in the `directly_from_*` field. Tweets that are only referenced tweets then can be identified by looking for rows where `from_* AND NOT directly_from_*`.
 
 **Note:** The filter stream matches on tweets that match a certain rule _and_ quote tweets where the [_quoted_ tweet matches the rule](https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query#quote-tweets). _If we did not previously see the quoted tweet in the stream_ (i.e. if we started our stream after that tweet was posted), then that tweet will be marked as `False` in the `directly_from_stream` field, even though it may be the tweet with the keyword match. For this reason, it is recommended to backfill the stream tweets with a search query after the stream is done, so that quoted tweets that were matched by the stream will be marked as `True` in the `directly_from_search` field. This allows us to identify all directly relevant tweets by looking for those that are `directly_from_stream AND directly_from_search`.

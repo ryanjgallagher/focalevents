@@ -40,6 +40,7 @@ endpoints:
         search: "https://api.twitter.com/2/tweets/search/all"
         user: "https://api.twitter.com/2/users"
         users_lookup: "https://api.twitter.com/2/users/by"
+        count: "https://api.twitter.com/2/tweets/counts/all"
 # Rate limits on the number of calls per 15 mins
 rate_limits:
     twitter:

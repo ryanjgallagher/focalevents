@@ -4,7 +4,7 @@ This repository provides tools that make advanced studies of social media data e
 
 It is often difficult to organize data from multiple API queries. For example, we may collect tweets when a hashtag starts trending by using Twitter's filter stream. Later, we may make a separate query to the search endpoint to backfill our stream with what we missed before we started it, or update it with tweets that occurred since we stopped it. We may also want to get reply threads, quote tweets, or user timelines based on the tweets we collected. All of these queries are related to a common focal event—the hashtag—but they require several separate calls to the API. It is easy for these multiple queries to result in many disjoint files, making it difficult to organize, merge, update, backfill, and preprocess them quickly and reliably.
 
-The `focalevents` codebase organizes social media focal event data using PostgreSQL, making it easy to query, backfill, update, sort, and augment the data. For example, collecting Twitter conversations, quotes, or user timelines are all _easy, single line_ commands, instead of a multi-line scripts that need to read IDs, query the API, and output the data. This allows researchers to design more complex studies of social media data, and spend more time focusing on data analysis, rather than data storage and maintenance.
+The `focalevents` codebase organizes social media focal event data using PostgreSQL, making it easy to query, backfill, update, sort, and augment the data. For example, collecting Twitter conversations, quotes, or user timelines are all _easy, single line_ commands, instead of multi-line scripts that need to read IDs, query the API, and output the data. This allows researchers to design more complex studies of social media data, and spend more time focusing on data analysis, rather than data storage and maintenance.
 
 ## Getting Started
 
@@ -41,17 +41,22 @@ This will create all of the necessary directories, schemas, and tables needed fo
 
 **All data is organized around an "event name."** This name should be a unique signifer for the focal event around which want to collect data.
 
-Each query is run using an event query configuration file, which is a YAML file named with the event name. For example, say we want to search for tweets about Facebook's Oversight Board. Then we can name our event `"facebook_oversight"`. The specific queries to the Twitter API are specified the event configuration file `input/twitter/search/facebook_oversight.yaml`.
+Queries are separated from the code by using an event query configuration file, which is a YAML file named with the event name. For example, say we want to search for tweets about Facebook's Oversight Board. Then we can name our event `"facebook_oversight"`. The specific search queries to the Twitter API are specified the event configuration file `input/twitter/search/facebook_oversight.yaml`.
 
 The format of the `.yaml` event configuration files depends on the platform and the type of query being done. You can find examples in this repository's [input directory](https://github.com/ryanjgallagher/focalevents/tree/main/input). The syntax for Twitter queries follows the API's operators ([stream](https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/integrate/build-a-rule), [search](https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query)).
 
 
 ### Getting Focal Event Data
 
-Once the focal event's query configuration file is set, you are ready to run it! All queries are run using Python at the command line with the `-m` flag. For example, if the event's name is `facebook_oversight`, then we can run a basic Twitter search by going to the`focalevents` directory and entering:
+Once the focal event's query configuration file is set, you are ready to run it! All queries are run using Python at the command line with the `-m` flag. For example, if the event's name is `facebook_oversight`, then we can run a basic Twitter search by going to the `focalevents` directory and entering:
 
 ```
 python -m twitter.search facebook_oversight
 ```
 
 For details on collecting Twitter data, see [here](https://github.com/ryanjgallagher/focalevents/tree/main/twitter).
+
+
+## A Note
+
+First and foremost, the code here is designed to help the repository's author manage their own data and create replicable pipelines. They are sharing it in the hope that it may help others who have similar workflows and are interested in organizing their Twitter data according to focal events using PostgreSQL. However, most requests for enhancements or additions to the code will likely be declined if the author does not anticipate using them in their own research. It is highly unlikely the code will ever be adapted to work with databases other than PostgreSQL. Further, general problems with database setup or conflicts with pre-existing database structurs are beyond the scope of this project and will not be addressed.

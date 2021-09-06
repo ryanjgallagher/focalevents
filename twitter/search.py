@@ -60,6 +60,14 @@ class SearchListener(APIListener):
     max_results_per_page: int
         The maximum number of tweets to return per page of search. Defaults to
         the maximum 500. The minimum must be 10
+    get_counts: bool
+        Whether to count the number of tweets that will be returned by the
+        queries, in place of actually searching the tweets. The time series
+        count of tweets per granularity is output to a JSON file, each numbered
+        according to the same ordr as the input query file
+    granularity: str
+        If counting, the granularity of the time series data, either `"minute"`,
+        `"hour"`, or `"day"`. Defaults to `"hour"`
     get_convos: bool
         Whether to get the conversations for the event using the conversation
         IDs from the prior search or stream of the event, or for a list of input
@@ -140,7 +148,12 @@ class SearchListener(APIListener):
     append: bool
         Whether to append to the JSON file. If False, then overwrites any JSON
         file with the same name that already exists. Always appends if doing an
-        update or a backfill
+        update or a backfill. Always overwrites if doing counts
+    write_count_files: bool
+        Whether to write JSON time series count data when counting. Defaults to
+        True if running a standard search. Defaults to False if running a
+        timeline, conversation, or quote search (because they will produce many
+        count files)
     verbose: bool
         Whether to print out information/updates of the search. Defaults to True
     update_interval: int
@@ -150,6 +163,8 @@ class SearchListener(APIListener):
                  event,
                  config_f,
                  max_results_per_page=500,
+                 get_counts=False,
+                 granularity="hour",
                  get_convos=False,
                  get_quotes=False,
                  get_quotes_of_quotes=False,
@@ -164,6 +179,7 @@ class SearchListener(APIListener):
                  n_days_back=0,
                  n_days_after=0,
                  append=True,
+                 write_count_files=None,
                  verbose=True,
                  update_interval=15):
         super().__init__(event=event,
@@ -174,6 +190,7 @@ class SearchListener(APIListener):
                          update_interval=update_interval)
         self.update = update
         self.backfill = backfill
+        self.get_counts = get_counts
         self.get_convos = get_convos
         self.get_quotes = get_quotes
         self.get_quotes_of_quotes = get_quotes_of_quotes
@@ -187,7 +204,15 @@ class SearchListener(APIListener):
         self.unavail_user = False
         self.n_calls_last_15mins = 0
         self.rate_limit = self.config['rate_limits']['twitter']['search']
-        self.search_endpoint = self.config['endpoints']['twitter']['search']
+        if get_counts:
+            self.search_endpoint = self.config['endpoints']['twitter']['count']
+        else:
+            self.search_endpoint = self.config['endpoints']['twitter']['search']
+
+        if get_counts:
+            self.query_number = 0
+            self.query_tweet_count = 0
+            self.total_query_tweet_count = 0
 
         # Set defaults if convo or timeline search
         if get_convos:
@@ -210,12 +235,22 @@ class SearchListener(APIListener):
             self.out_json_fname = f"{self.out_json_dir}/{event}_conversations.json"
         elif get_timelines:
             self.out_json_fname = f"{self.out_json_dir}/{event}_timelines.json"
-        if append or update or backfill:
+        if (append or update or backfill) and (not get_counts):
             self.write_mode = 'a+'
         else:
             self.write_mode = 'w+'
+        # Whether to write counting files
+        if write_count_files is None:
+            if self.query_type == 'search':
+                self.write_count_files = True
+            else:
+                self.write_count_files = False
+        else:
+            self.write_count_files = write_count_files
         # Open here and not general listening class in case final name changed
-        self.out_json_f = open(self.out_json_fname, self.write_mode)
+        # Count file gets opened in `update_query` since it dynamically changes
+        if not get_counts:
+            self.out_json_f = open(self.out_json_fname, self.write_mode)
 
         # Set up queries and query parameters
         self.get_earliest_latest_event_times()
@@ -229,13 +264,19 @@ class SearchListener(APIListener):
             self.set_search_queries()
         else:
             self.set_alt_search_queries()
-        self.update_query()
-        self.params['max_results'] = max_results_per_page
-        if self.verbose:
-            print('\nSearch params: ')
-            pprint(self.params)
 
-        self.params.update(self.request_fields)
+        if self.verbose:
+            print('Search params: ')
+            print(f"\tStart time: {self.params['start_time']}")
+            print(f"\tEnd time: {self.params['end_time']}\n")
+
+        self.update_query()
+
+        if get_counts:
+            self.params['granularity'] = granularity
+        else:
+            self.params.update(self.request_fields)
+            self.params['max_results'] = max_results_per_page
 
 
     def set_convo_defaults(self, convo_ids_f):
@@ -502,6 +543,16 @@ class SearchListener(APIListener):
         """
         Updates the current query, tells search to stop if no more queries
         """
+        if self.get_counts:
+            if self.query_type == 'search' and self.total_query_tweet_count > 0 and self.verbose:
+                print(f'\nNumber of tweets in query: {self.query_tweet_count:,}')
+            self.query_tweet_count = 0
+            # Update filename of JSON
+            if self.query_number > 0 and self.write_count_files:
+                self.out_json_f.close()
+            self.query_number += 1
+            pad_num = str(self.query_number).zfill(len(str(self.queries.qsize())))
+            self.out_json_fname = f"{self.out_json_dir}/{self.event}_counts_{pad_num}.json"
         if self.queries.qsize() > 0:
             q,q_start,q_end = self.queries.get(block=False)
             self.params['query'] = q
@@ -512,6 +563,9 @@ class SearchListener(APIListener):
             if self.query_type == 'search' and self.verbose:
                 print('\n\tUpdated query')
                 print(f"\t{self.params['query']}")
+            # Put this in this condition so we don't make an extra count file
+            if self.get_counts and self.write_count_files:
+                self.out_json_f = open(self.out_json_fname, self.write_mode)
         else:
             self.stop = True
             if self.verbose:
@@ -526,8 +580,6 @@ class SearchListener(APIListener):
         signal.signal(signal.SIGINT, self.exit_handler)
 
         # Get tweets from search
-        if self.verbose:
-            print('\nSearching tweets...')
         while not self.stop:
             self.check_rate_limit()
 
@@ -552,13 +604,81 @@ class SearchListener(APIListener):
             self.limit_rate()
 
 
+    def count(self):
+        """
+        Connects to the counting endpoint to see how many tweets a given set of
+        queries will return
+        """
+        signal.signal(signal.SIGINT, self.exit_handler)
+
+        # Count tweets from search
+        while not self.stop:
+            self.check_rate_limit()
+
+            response = requests.get(self.search_endpoint, headers=self.headers,
+                                    params=self.params)
+            self.n_calls_last_15mins += 1
+            self.check_response_exception(response)
+            if self.pause or self.temp_unavail:
+                continue
+
+            # Parse counts
+            response_json = response.json()
+            self.manage_counting(response_json)
+
+            if self.stop:
+                return
+
+            if 'next_token' in response_json['meta']:
+                self.params['next_token'] = response_json['meta']['next_token']
+            else:
+                self.update_query()
+
+            self.limit_rate()
+
+
+    def manage_counting(self, response_json):
+        """
+        Coordinates the writing of data, namely handling exceptions and updating
+        the count of data returned from the API
+
+        Parameters
+        ----------
+        response_json: dict
+            JSON from an API response produced via the response library
+        """
+        try:
+            # Get total number of tweets
+            total_count = response_json['meta']['total_tweet_count']
+            self.query_tweet_count += total_count
+            self.total_query_tweet_count += total_count
+
+            # Write out counts for granularity
+            if self.write_count_files:
+                counts = response_json['data']
+                for count in counts:
+                    out_str = json.dumps(count)
+                    self.out_json_f.write(f"{out_str}\n")
+        except KeyError as err:
+            if 'meta' in response_json and 'result_count' in response_json['meta']:
+                if response_json['meta']['result_count'] == 0:
+                    pass
+                else:
+                    pprint(response_json)
+                    raise err
+            else:
+                pprint(response_json)
+                raise err
+
+
 # ------------------------------------------------------------------------------
 # --------------------------- End of class definition --------------------------
 # ------------------------------------------------------------------------------
-def main(event, config_f, max_results_per_page, get_convos, get_quotes,
-         get_quotes_of_quotes, get_timelines, full_timelines, user_ids_f,
-         convo_ids_f, update, backfill, start_time, end_time,n_days_back,
-         n_days_after, append, verbose, update_interval):
+def main(event, config_f, max_results_per_page, get_counts, granularity,
+         get_convos, get_quotes, get_quotes_of_quotes, get_timelines,
+         full_timelines, user_ids_f, convo_ids_f, update, backfill, start_time,
+         end_time, n_days_back, n_days_after, append, write_count_files,
+         verbose, update_interval):
     """
     Connects to the Twitter API v2 search endpoint
 
@@ -568,6 +688,8 @@ def main(event, config_f, max_results_per_page, get_convos, get_quotes,
     search =SearchListener(event=event,
                            config_f=config_f,
                            max_results_per_page=max_results_per_page,
+                           get_counts=get_counts,
+                           granularity=granularity,
                            get_convos=get_convos,
                            get_quotes=get_quotes,
                            get_quotes_of_quotes=get_quotes_of_quotes,
@@ -582,19 +704,30 @@ def main(event, config_f, max_results_per_page, get_convos, get_quotes,
                            n_days_back=n_days_back,
                            n_days_after=n_days_after,
                            append=append,
+                           write_count_files=write_count_files,
                            verbose=verbose,
                            update_interval=update_interval)
-    search.search()
+    if get_counts:
+        search.count()
+    else:
+        search.search()
 
-    search.out_json_f.close()
     search.conn.commit()
     search.cur.close()
     search.conn.close()
-    if verbose:
+    # Last file gets closed during counting
+    if not get_counts:
+        search.out_json_f.close()
+
+    if verbose and not get_counts:
         print('Closed writing and committed changes to database')
         now = datetime.now().strftime("%Y-%m-%d %I:%m%p")
         print(f"\nSearch finished at {now}")
         print(f"\n{search.n_tweets_total:,} tweets returned by API\n")
+    elif verbose and get_counts:
+        now = datetime.now().strftime("%Y-%m-%d %I:%m%p")
+        print(f"\nCounting finished at {now}")
+        print(f"Estimated {search.total_query_tweet_count:,} tweets across all queries\n")
 
 
 if __name__ == '__main__':
@@ -609,7 +742,9 @@ if __name__ == '__main__':
     parser.add_argument("-n_days_back", type=int, default=0)
     parser.add_argument("-n_days_after", type=int, default=0)
     parser.add_argument("-update_interval", type=int, default=15)
+    parser.add_argument("-granularity", type=str, default="hour")
     # Booleans can't be parsed directly, so you set a flag for each option
+    parser.add_argument("--get_counts", dest="get_counts", action="store_true")
     parser.add_argument("--get_convos", dest="get_convos", action="store_true")
     parser.add_argument("--get_quotes", dest="get_quotes", action="store_true")
     parser.add_argument("--get_quotes_of_quotes", dest="get_quotes_of_quotes", action="store_true")
@@ -621,15 +756,20 @@ if __name__ == '__main__':
     parser.add_argument("--verbose", dest="verbose", action="store_true")
     parser.add_argument("--quiet", dest="verbose", action="store_false")
     parser.add_argument("--overwrite", dest="append", action="store_false")
-    parser.set_defaults(get_convos=False, get_quotes=False, get_timelines=False,
-                        get_quotes_of_quotes=False, append=True, verbose=True,
-                        full_timelines=False, update=False, backfill=False)
+    parser.add_argument("--write_count_files", dest="write_count_files", action="store_true")
+    parser.add_argument("--no_count_files", dest="write_count_files", action="store_false")
+    parser.set_defaults(get_counts=False, get_convos=False, get_quotes=False,
+                        get_timelines=False, get_quotes_of_quotes=False,
+                        append=True, verbose=True, full_timelines=False,
+                        update=False, backfill=False, write_count_files=None)
 
     args = parser.parse_args()
 
     main(args.event,
          args.config,
          args.max_results_per_page,
+         args.get_counts,
+         args.granularity,
          args.get_convos,
          args.get_quotes,
          args.get_quotes_of_quotes,
@@ -644,5 +784,6 @@ if __name__ == '__main__':
          args.n_days_back,
          args.n_days_after,
          args.append,
+         args.write_count_files,
          args.verbose,
          args.update_interval)
