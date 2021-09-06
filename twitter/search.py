@@ -274,6 +274,7 @@ class SearchListener(APIListener):
 
         if get_counts:
             self.params['granularity'] = granularity
+            self.n_zeros = len(str(self.queries.qsize()))
         else:
             self.params.update(self.request_fields)
             self.params['max_results'] = max_results_per_page
@@ -551,7 +552,7 @@ class SearchListener(APIListener):
             if self.query_number > 0 and self.write_count_files:
                 self.out_json_f.close()
             self.query_number += 1
-            pad_num = str(self.query_number).zfill(len(str(self.queries.qsize())))
+            pad_num = str(self.query_number).zfill(self.n_zeros)
             self.out_json_fname = f"{self.out_json_dir}/{self.event}_counts_{pad_num}.json"
         if self.queries.qsize() > 0:
             q,q_start,q_end = self.queries.get(block=False)
