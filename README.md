@@ -16,6 +16,12 @@ The repository's code can be downloaded directly from Github, or cloned using gi
 git clone https://github.com/ryanjgallagher/focalevents
 ```
 
+You can install any needed packages by navigating to the project directory and running:
+
+```
+pip install -r requirements.txt
+```
+
 You will also need to install PostgreSQL and create a database on the computer that you want to run this code. There are many online resources for installing PostgreSQL and configuring a database, so there are no utilities or instructions here for doing so.
 
 
