@@ -270,14 +270,14 @@ class SearchListener(APIListener):
             print(f"\tStart time: {self.params['start_time']}")
             print(f"\tEnd time: {self.params['end_time']}\n")
 
-        self.update_query()
-
         if get_counts:
             self.params['granularity'] = granularity
             self.n_zeros = len(str(self.queries.qsize()))
         else:
             self.params.update(self.request_fields)
             self.params['max_results'] = max_results_per_page
+
+        self.update_query()
 
 
     def set_convo_defaults(self, convo_ids_f):
