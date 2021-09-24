@@ -1,7 +1,6 @@
 import os
 import sys
 import json
-import psycopg2
 from pprint import pprint
 from dateutil import parser
 from datetime import datetime
@@ -279,7 +278,6 @@ def get_ref_relations(tweets, ref_id2author_id, author_id2n_followers,
     tweet_id2ref_type2n_followers = dict()
     for tweet in tweets:
         tweet_id = tweet['id']
-        ref_id2ref_type = dict()
         tweet_id2ref_type2author[tweet_id] = dict()
         tweet_id2ref_type2n_followers[tweet_id] = dict()
 
@@ -401,7 +399,7 @@ def get_tweet_insert(tweet, event, query_type, direct):
         'directly_from_quote_search': False,
         'from_timeline_search': False,
         'directly_from_timeline_search': False,
-        'text': tweet['text'],
+        'text': tweet['text'].replace('\x00', ''),
         'lang': tweet['lang'],
         'author_id': tweet['author_id'],
         'created_at': parser.parse(tweet['created_at']),
@@ -498,7 +496,7 @@ def get_user_insert(user, event):
 
     for f in ['description', 'location', 'pinned_tweet_id']:
         try:
-            user_insert[f] = user[f]
+            user_insert[f] = user[f].replace('\x00', '')
         except KeyError:
             user_insert[f] = None
 
