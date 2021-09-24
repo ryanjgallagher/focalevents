@@ -2,7 +2,7 @@
 
 Data is collected from Twitter using their v2 API endpoints and syntax. This codebase assumes that you have academic access with your tokens because they are needed to utilize the API's full-archive search capabilities.
 
-See the [full documentation](focalevents.readthedocs.io) for more details.
+See the [full documentation](https://focalevents.readthedocs.io) for more details.
 
 
 ## Collecting Data from Streams
@@ -32,4 +32,4 @@ The search can be cancelled at any time with `CTRL+C`.
 
 ## Documentation
 
-See the [full documentation](focalevents.readthedocs.io) for more information about searching and streaming tweets, and how to collect conversations, quotes, and timelines.
+See the [full documentation](https://focalevents.readthedocs.io) for more information about searching and streaming tweets, and how to collect conversations, quotes, and timelines.
