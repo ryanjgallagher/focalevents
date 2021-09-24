@@ -2,15 +2,7 @@
 
 Data is collected from Twitter using their v2 API endpoints and syntax. This codebase assumes that you have academic access with your tokens because they are needed to utilize the API's full-archive search capabilities.
 
-The following data can be collected around a focal event on Twitter:
-
-- Tweets from the filter stream
-- Tweets from the full-archive search
-- Conversation reply threads from tweets collected from a focal event stream/search
-- Quote tweets quoting any tweets collected from a focal event search ([not needed for stream tweets](https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query#quote-tweets))
--  User timelines of users who tweeted during a focal event stream/search
-
-In addition, there are tools for easily updating and backfilling any of the above queries (except quote tweets). All of the data is linked through the `event` field in the PostgreSQL tables (see below for details on table organization).
+See the [full documentation](focalevents.readthedocs.io) for more details.
 
 
 ## Collecting Data from Streams
@@ -40,4 +32,4 @@ The search can be cancelled at any time with `CTRL+C`.
 
 ## Documentation
 
-See the [full documentation]() for more information about searching and streaming tweets, and how to collect conversations, quotes, and timelines.
+See the [full documentation](focalevents.readthedocs.io) for more information about searching and streaming tweets, and how to collect conversations, quotes, and timelines.

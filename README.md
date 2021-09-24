@@ -21,7 +21,7 @@ The repository's code can be downloaded directly from Github, or cloned using gi
 git clone https://github.com/ryanjgallagher/focalevents
 ```
 
-See the [full documentation]() for more information about installing, configuring, and using the `focalevent` tools.
+See the [full documentation](focalevents.readthedocs.io) for more information about installing, configuring, and using the `focalevent` tools.
 
 
 ## A Note
