@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Creating a Query &#8212; focalevents v0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Twitter Cookbook" href="twitter/index.html" />
+    <link rel="prev" title="Cookbook" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="creating-a-query">
+<span id="queries"></span><h1>Creating a Query<a class="headerlink" href="#creating-a-query" title="Permalink to this headline">¶</a></h1>
+<p>Queries are specified in files separate from the code that runs them. This modularity avoids hard coding the queries into the code itself and risking them being accidentally overwritten or modified between searches. Placing queries in their own files also makes them easier to share them, promoting transparency and replicability.</p>
+<section id="event-names">
+<h2>Event Names<a class="headerlink" href="#event-names" title="Permalink to this headline">¶</a></h2>
+<p>All data is organized around an <em>event name</em>. This name should be a unique signifier for the focal event around which you want to collect data.</p>
+<p>The event name is specified through the name of the query file. For example, say we want to search for tweets about Facebook’s Oversight Board. Then we can name our event “facebook_oversight” and create a corresponding search query file <code class="code docutils literal notranslate"><span class="pre">facebook_oversight.yaml</span></code>. The query file should be placed in the appropriate <code class="code docutils literal notranslate"><span class="pre">input</span></code> directory. For example, if we are running a Twitter search, then we will place our query file in the directory <code class="code docutils literal notranslate"><span class="pre">input/twitter/search</span></code>.</p>
+</section>
+<section id="query-structure">
+<h2>Query Structure<a class="headerlink" href="#query-structure" title="Permalink to this headline">¶</a></h2>
+<p>The structure and syntax of the query file depends on the platform being queried and the endpoint’s query operators.</p>
+<section id="twitter-search">
+<h3>Twitter Search<a class="headerlink" href="#twitter-search" title="Permalink to this headline">¶</a></h3>
+<p>Twitter search query files are YAML files with three fields: <code class="code docutils literal notranslate"><span class="pre">queries</span></code>, <code class="code docutils literal notranslate"><span class="pre">start_time</span></code>, and <code class="code docutils literal notranslate"><span class="pre">end_time</span></code>. The <code class="code docutils literal notranslate"><span class="pre">queries</span></code> field allows you to list multiple queries sequentially, each of which will be sent to the Twitter API. The start and end times follow the RFC 3339 format, e.g. YYYY-MM-DDT00:00:00Z</p>
+<p>See <a class="reference external" href="https://github.com/ryanjgallagher/focalevents/blob/main/input/twitter/search/facebook_oversight.yaml/">here</a> for an example of a Twitter search query file. See <a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query/">Twitter’s documentation</a> for details on how to build a Twitter search query.</p>
+</section>
+<section id="twitter-filter-stream">
+<h3>Twitter Filter Stream<a class="headerlink" href="#twitter-filter-stream" title="Permalink to this headline">¶</a></h3>
+<p>Twitter filter stream query files are YAML files with one field: <code class="code docutils literal notranslate"><span class="pre">rules</span></code>. The <code class="code docutils literal notranslate"><span class="pre">rules</span></code> field allows you to list multiple filter rules sequentially, each of which will be sent to the Twitter API. Each rule should have two fields itself: <code class="code docutils literal notranslate"><span class="pre">value</span></code> and <code class="code docutils literal notranslate"><span class="pre">tag</span></code>. The <code class="code docutils literal notranslate"><span class="pre">value</span></code> is the filter rule itself. The <code class="code docutils literal notranslate"><span class="pre">tag</span></code> is a colloquial description of the filter rule.</p>
+<p>See <a class="reference external" href="https://github.com/ryanjgallagher/focalevents/blob/main/input/twitter/stream/facebook_oversight.yaml/">here</a> for an example of a Twitter filter stream query file. See <a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/integrate/build-a-rule/">Twitter’s documentation</a> for details on how to build a filter rule for Twitter’s stream.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">focalevents</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Cookbook</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Creating a Query</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#event-names">Event Names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#query-structure">Query Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="twitter/index.html">Twitter Cookbook</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Cookbook</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Cookbook</a></li>
+      <li>Next: <a href="twitter/index.html" title="next chapter">Twitter Cookbook</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Ryan J. Gallagher.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/cookbook/queries.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

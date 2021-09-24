@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Social Media Focal Events Listener &#8212; focalevents v0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="social-media-focal-events-listener">
+<h1>Social Media Focal Events Listener<a class="headerlink" href="#social-media-focal-events-listener" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="code docutils literal notranslate"><span class="pre">focalevents</span></code> codebase provides tools for organizing data collected around focal events on social media.</p>
+<p>It is often difficult to organize data from multiple API queries. For example, we may collect tweets when a hashtag starts trending by using Twitter’s filter stream. Later, we may make a separate query to the search endpoint to backfill our stream with what we missed before we started it, or update it with tweets that occurred since we stopped it. We may also want to get reply threads, quote tweets, or user timelines based on the tweets we collected. All of these queries are related to a common focal event—the hashtag—but they require several separate calls to the API. It is easy for these multiple queries to result in many disjoint files, making it difficult to organize, merge, update, backfill, and preprocess them quickly and reliably.</p>
+<p>To address these issues, <code class="code docutils literal notranslate"><span class="pre">focalevents</span></code> can be used to organize social media focal event data collected from Twitter’s v2 API using academic credentials and PostgreSQL. It is easy to do any of the following with the tools here:</p>
+<ul class="simple">
+<li><p>Query Twitter’s full archive or filter stream for focal event data</p></li>
+<li><p>Backfill and update those queries with additional data</p></li>
+<li><p>Collect conversation threads and quote tweets of focal event tweets</p></li>
+<li><p>Retrieve full user timelines for any user tweeting during a focal event</p></li>
+</ul>
+<p>All of these functionalities are easy, single line commands, rather than long multi-line scripts, as are typically needed to read IDs, query the API, output data, and merge it with existing data. This allows researchers to design more complex studies of social media data, and spend more time focusing on data analysis, rather than data storage and maintenance.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#configuration">Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/index.html">Cookbook</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cookbook/queries.html">Creating a Query</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cookbook/queries.html#event-names">Event Names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook/queries.html#query-structure">Query Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook/twitter/index.html">Twitter Cookbook</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cookbook/twitter/stream.html">Streaming Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook/twitter/search.html">Searching for Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook/twitter/updates_and_backfills.html">Updates and Backfills</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook/twitter/auxiliary_searches.html">Getting Conversations, Quotes, and Timelines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook/twitter/data.html">Data Tables and Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook/twitter/organization.html">Data Across Queries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">focalevents</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/index.html">Cookbook</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="installation.html" title="next chapter">Getting Started</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Ryan J. Gallagher.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

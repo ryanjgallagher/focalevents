@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Updates and Backfills &#8212; focalevents v0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Getting Conversations, Quotes, and Timelines" href="auxiliary_searches.html" />
+    <link rel="prev" title="Searching for Data" href="search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="updates-and-backfills">
+<span id="id1"></span><h1>Updates and Backfills<a class="headerlink" href="#updates-and-backfills" title="Permalink to this headline">¶</a></h1>
+<p>Once a search or stream has been run around a focal event, it is easy to update or backfill the tweets with additional data.</p>
+<section id="updates-and-end-times">
+<h2>Updates and End Times<a class="headerlink" href="#updates-and-end-times" title="Permalink to this headline">¶</a></h2>
+<p>The focal event can be updated with all the tweets that have occurred since the stream/search was run. To do this, use the <code class="code docutils literal notranslate"><span class="pre">update</span></code> flag</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m twitter.search event_name --update
+</pre></div>
+</div>
+<p>By default, the update looks at the last focal event tweet that came from the stream/search and gets all tweets that occurred from then to the moment of running the update.</p>
+<p>To change when the update ends, we can use the <code class="code docutils literal notranslate"><span class="pre">end_time</span></code> parameter. A specific time can be passed to the <code class="code docutils literal notranslate"><span class="pre">end_time</span></code>, and the update will run from the last search/stream tweet to that time. For example, if we want to run our update until 11am UTC on August 18th, 2021, then we can enter</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m twitter.search event_name --update -end_time <span class="m">2021</span>-08-18T11:00:00.00Z
+</pre></div>
+</div>
+<p>We can also set the <code class="code docutils literal notranslate"><span class="pre">end_time</span></code> to the value <code class="code docutils literal notranslate"><span class="pre">last_time</span></code> and use the parameter <code class="code docutils literal notranslate"><span class="pre">n_days_after</span></code> to modify how many days after the last search/stream tweet time that we want to run the update. For example, if we wanted to run the update for the 3 days following the last tweet from our search/stream, then we would do</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m twitter.search event_name --update -end_time last_time -n_days_after <span class="m">3</span>
+</pre></div>
+</div>
+</section>
+<section id="backfills-and-start-times">
+<h2>Backfills and Start Times<a class="headerlink" href="#backfills-and-start-times" title="Permalink to this headline">¶</a></h2>
+<p>In addition to updating our dataset, we can also backfill it with tweets that occurred before the earliest tweet in our search/stream. By default, the backfill runs from the beginning of the day of the earliest tweet from the search/stream until the time of that tweet. We can run that basic backfill as</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m twitter.search event_name --backfill
+</pre></div>
+</div>
+<p>Like the update, we can also set the backfill start manually using the <code class="code docutils literal notranslate"><span class="pre">start_time</span></code>. The <code class="code docutils literal notranslate"><span class="pre">start_time</span></code> can either be a specific time or a time relative to the <code class="code docutils literal notranslate"><span class="pre">first_time</span></code> using the <code class="code docutils literal notranslate"><span class="pre">n_days_before</span></code> parameter. For example, if we wanted to get all the focal event tweets that occurred in the week prior to the first tweet in our search/stream, then we would enter</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m twitter.search event_name --backfill -start_time first_time -n_days_before <span class="m">7</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All time parameters need to be RFC 3339 format:</p>
+<p>YYYY-MM-DDT00:00:00.00Z</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The start and end times can be used together for any search, not just updates and backfills. That is, a different <code class="code docutils literal notranslate"><span class="pre">start_time</span></code> can be used for an update, a different <code class="code docutils literal notranslate"><span class="pre">end_time</span></code> can be used for a backfill, and in general both parameters can be used to produce any time window.</p>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">focalevents</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../queries.html">Creating a Query</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Twitter Cookbook</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="stream.html">Streaming Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="search.html">Searching for Data</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Updates and Backfills</a></li>
+<li class="toctree-l3"><a class="reference internal" href="auxiliary_searches.html">Getting Conversations, Quotes, and Timelines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html">Data Tables and Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="organization.html">Data Across Queries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Cookbook</a><ul>
+  <li><a href="index.html">Twitter Cookbook</a><ul>
+      <li>Previous: <a href="search.html" title="previous chapter">Searching for Data</a></li>
+      <li>Next: <a href="auxiliary_searches.html" title="next chapter">Getting Conversations, Quotes, and Timelines</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Ryan J. Gallagher.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/cookbook/twitter/updates_and_backfills.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

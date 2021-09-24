@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Data Across Queries &#8212; focalevents v0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Data Tables and Fields" href="data.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="data-across-queries">
+<h1>Data Across Queries<a class="headerlink" href="#data-across-queries" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="code docutils literal notranslate"><span class="pre">focalevents</span></code> tools are designed with multiple related queries in mind, whether they be from a stream, search, or auxiliary search for conversations, quotes, or timelines. There are five boolean fields in the <code class="code docutils literal notranslate"><span class="pre">tweets</span></code> table to distinguish the query source of any given tweet:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">from_stream</span></code>,</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">from_search</span></code>,</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">from_quote_search</span></code>,</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">from_convo_search</span></code>,</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">from_timeline_search</span></code>,</p></li>
+</ul>
+<p>All tweets that were returned by a particular query will be marked as <code class="code docutils literal notranslate"><span class="pre">True</span></code> in the corresponding <code class="code docutils literal notranslate"><span class="pre">from_*</span></code> field. Multiple columns can be <code class="code docutils literal notranslate"><span class="pre">True</span></code> if a tweet was returned by more than one type of query. This allows you to distinguish the query source of different tweets, while still organizing them together through their <code class="code docutils literal notranslate"><span class="pre">event</span></code> names.</p>
+<section id="referenced-tweets">
+<h2>Referenced Tweets<a class="headerlink" href="#referenced-tweets" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="code docutils literal notranslate"><span class="pre">tweets</span></code> table distinguishes between tweets that are returned directly in response to a query from the API, and <a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/tweet/">referenced tweets</a> that are returned because they were retweeted, quoted, or replied to. There are five additional boolean fields corresponding to the ones above that indicate whether a tweet was referenced or not:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">directly_from_stream</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">directly_from_search</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">directly_from_quote_search</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">directly_from_convo_search</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">directly_from_timeline_search</span></code></p></li>
+</ul>
+<p><em>All</em> tweets that were returned by a particular query, referenced or not, will be marked as <code class="code docutils literal notranslate"><span class="pre">True</span></code> in the <code class="code docutils literal notranslate"><span class="pre">from_*</span></code> field. Any tweet that was returned <em>directly</em> by a query (i.e. it is not just a referenced tweet) will be marked as <code class="code docutils literal notranslate"><span class="pre">True</span></code> in the <code class="code docutils literal notranslate"><span class="pre">directly_from_*</span></code> field. Tweets that are only referenced tweets then can be identified by looking for rows where <code class="code docutils literal notranslate"><span class="pre">from_*</span> <span class="pre">AND</span> <span class="pre">NOT</span> <span class="pre">directly_from_*</span></code>.</p>
+</section>
+<section id="quote-tweet-matching-in-streams-and-searches">
+<h2>Quote Tweet Matching in Streams and Searches<a class="headerlink" href="#quote-tweet-matching-in-streams-and-searches" title="Permalink to this headline">¶</a></h2>
+<p>The filter stream matches on tweets that match a certain rule <em>and</em> quote tweets where the <a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query#quote-tweets">quoted tweet matches the rule</a>. This means that if we did not previously see a quoted tweet in a stream (i.e. if we started our stream after the quoted tweet was posted), then that tweet will be marked as <code class="code docutils literal notranslate"><span class="pre">False</span></code> in the <code class="code docutils literal notranslate"><span class="pre">directly_from_stream</span></code> field, even though it may be the tweet with the keyword match. For this reason, it is recommended to backfill the stream tweets with a search query after the stream is done, so that quoted tweets that were matched by the stream will be marked as <code class="code docutils literal notranslate"><span class="pre">True</span></code> in the <code class="code docutils literal notranslate"><span class="pre">directly_from_search</span></code> field. This allows us to identify all directly relevant tweets by looking for those that are <code class="code docutils literal notranslate"><span class="pre">directly_from_stream</span> <span class="pre">AND</span> <span class="pre">directly_from_search</span></code>.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">focalevents</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../queries.html">Creating a Query</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Twitter Cookbook</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="stream.html">Streaming Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="search.html">Searching for Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="updates_and_backfills.html">Updates and Backfills</a></li>
+<li class="toctree-l3"><a class="reference internal" href="auxiliary_searches.html">Getting Conversations, Quotes, and Timelines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html">Data Tables and Fields</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Data Across Queries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Cookbook</a><ul>
+  <li><a href="index.html">Twitter Cookbook</a><ul>
+      <li>Previous: <a href="data.html" title="previous chapter">Data Tables and Fields</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Ryan J. Gallagher.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/cookbook/twitter/organization.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

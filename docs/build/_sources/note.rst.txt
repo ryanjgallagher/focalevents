@@ -1,0 +1,6 @@
+A Note
+======
+
+The code here is written and maintained by a single person. First and foremost, it has been designed to help them manage their own data and create replicable pipelines. They are sharing it in the hope that it may help others who have similar workflows and are interested in organizing their Twitter data according to focal events using PostgreSQL.
+
+Requests for enhancements or additions to the code will likely be declined if the author does not anticipate using them in their own research. It is highly unlikely that the code will ever be adapted to work with databases other than PostgreSQL. Further, general problems with database setup or conflicts with pre-existing database structures are beyond the scope of this project and will not be addressed.
