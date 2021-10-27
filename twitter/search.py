@@ -1,18 +1,15 @@
 import os
 import sys
-import time
 import json
 import yaml
 import signal
 import argparse
 import requests
-import psycopg2
 import warnings
 from queue import Queue
 from pprint import pprint
 from datetime import datetime
 from datetime import timedelta
-from psycopg2.extras import Json
 from dateutil import parser as dateparser
 from .helper import *
 from .listener import APIListener
@@ -307,7 +304,7 @@ class SearchListener(APIListener):
         Sets default parameters if running a quote search
         """
         self.group_by_id = 'id,author_handle'
-        self.query_operator: 'url'
+        self.query_operator = 'url'
         if not self.get_quotes_of_quotes:
             self.query_breadth = 'directly_from_search'
         else:
@@ -414,9 +411,9 @@ class SearchListener(APIListener):
                 for line in f_in:
                     self.query_ids.append((line.strip(), None, None))
             if self.verbose:
-                if get_timelines:
+                if self.get_timelines:
                     print(f"{len(self.query_ids):,} timelines to retrieve")
-                elif get_convos:
+                elif self.get_convos:
                     print(f"{len(self.query_ids):,} conversations to retrieve")
 
 
@@ -433,7 +430,7 @@ class SearchListener(APIListener):
                 start_datetime = self.last_time
             else:
                 start_datetime = dateparser.parse(self.start_time)
-            start_datetime =  start_datetime - timedelta(self.n_days_back)
+            start_datetime = start_datetime - timedelta(self.n_days_back)
             self.params['start_time'] = start_datetime.strftime(date_format)
         elif self.backfill:
             start_datetime = datetime(self.first_time.year, self.first_time.month,
