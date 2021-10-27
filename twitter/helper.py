@@ -1,7 +1,6 @@
 import os
 import sys
 import json
-from pprint import pprint
 from dateutil import parser
 from datetime import datetime
 from psycopg2.extras import Json
@@ -374,6 +373,11 @@ def get_tweet_insert(tweet, event, query_type, direct):
         place_id = tweet['geo']['place_id']
     except KeyError:
         place_id = None
+    # Source
+    try:
+        source = tweet['source']
+    except KeyError:
+        source = None
     # Referenced tweets
     ref_tweets = {'replied_to': None, 'quoted': None, 'retweeted': None}
     try:
@@ -406,7 +410,7 @@ def get_tweet_insert(tweet, event, query_type, direct):
         'conversation_id': tweet['conversation_id'],
         'possibly_sensitive': tweet['possibly_sensitive'],
         'reply_settings': tweet['reply_settings'],
-        'source': tweet['source'],
+        'source': source,
         'retweet_count': tweet['public_metrics']['retweet_count'],
         'reply_count': tweet['public_metrics']['reply_count'],
         'like_count': tweet['public_metrics']['like_count'],
