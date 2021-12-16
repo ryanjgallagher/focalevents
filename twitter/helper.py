@@ -457,7 +457,8 @@ def get_user_insert(user, event):
     """
     # Description hashtags
     try:
-        hashtags = [hashtag_info['tag'] for hashtag_info in user['entities']['description']['hashtags']]
+        hashtags = [hashtag_info['tag'].replace('\x00', '')
+                    for hashtag_info in user['entities']['description']['hashtags']]
     except KeyError:
         hashtags = None
     # Description mentions
@@ -484,8 +485,6 @@ def get_user_insert(user, event):
         'event': event,
         'inserted_at': now,
         'last_updated_at': now,
-        'name': user['name'],
-        'username': user['username'],
         'created_at': user['created_at'],
         'followers_count': user['public_metrics']['followers_count'],
         'following_count': user['public_metrics']['following_count'],
@@ -498,7 +497,7 @@ def get_user_insert(user, event):
         'verified': user['verified']
     }
 
-    for f in ['description', 'location', 'pinned_tweet_id']:
+    for f in ['description', 'location', 'pinned_tweet_id', 'name', 'username']:
         try:
             user_insert[f] = user[f].replace('\x00', '')
         except KeyError:
