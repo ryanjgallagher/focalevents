@@ -1,5 +1,3 @@
-import os
-import sys
 import json
 from dateutil import parser
 from datetime import datetime
@@ -382,7 +380,7 @@ def get_tweet_insert(tweet, event, query_type, direct):
     ref_tweets = {'replied_to': None, 'quoted': None, 'retweeted': None}
     try:
         ref_tweets.update({r['type']: r['id'] for r in tweet['referenced_tweets']})
-    except:
+    except KeyError:
         pass
 
     now = datetime.now()

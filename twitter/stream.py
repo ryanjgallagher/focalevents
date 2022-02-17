@@ -1,20 +1,14 @@
-import os
 import sys
-import time
 import json
 import yaml
 import queue
 import signal
 import argparse
 import requests
-import dateutil
-import psycopg2
 import numpy as np
 from pprint import pprint
 from datetime import datetime
-from psycopg2.extras import Json
 from multiprocessing import Queue
-from multiprocessing import Value
 from multiprocessing import Process
 from .helper import *
 from .listener import APIListener

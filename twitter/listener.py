@@ -1,11 +1,9 @@
-import os
-import sys
 import time
 import json
 import yaml
-import signal
 import psycopg2
 from pprint import pprint
+from datetime import datetime
 from .helper import *
 
 date_format = '%Y-%m-%dT%H:%M:%SZ'
@@ -50,8 +48,6 @@ class APIListener():
         else:
             self.write_mode = 'w+'
         # Database output
-        db_user = config['psql']['user']
-        database = config['psql']['database']
         schema = config['output']['psql']['twitter']['schema']
         tables = config['output']['psql']['twitter']['tables']
         self.tables = dict()
