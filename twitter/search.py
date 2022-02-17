@@ -177,8 +177,17 @@ class SearchListener(APIListener):
                  write_count_files=None,
                  verbose=True,
                  update_interval=15):
+        if get_convos:
+            query_type = 'convo_search'
+        elif get_quotes:
+            query_type = 'quote_search'
+        elif get_timelines:
+            query_type = 'timeline_search'
+        else:
+            query_type = 'search'
+
         super().__init__(event=event,
-                         query_type='search',
+                         query_type=query_type,
                          config_f=config_f,
                          append=append,
                          verbose=verbose,
@@ -228,6 +237,8 @@ class SearchListener(APIListener):
         # Output JSON file
         if get_convos:
             self.out_json_fname = f"{self.out_json_dir}/{event}_conversations.json"
+        elif get_quotes:
+            self.out_json_fname = f"{self.out_json_dir}/{event}_quotes.json"
         elif get_timelines:
             self.out_json_fname = f"{self.out_json_dir}/{event}_timelines.json"
         if (append or update or backfill) and (not get_counts):

@@ -24,6 +24,9 @@ output:
         twitter:
             stream: "output/twitter/stream"
             search: "output/twitter/search"
+            quote_search: "output/twitter/search/quotes"
+            convo_search: "output/twitter/search/convos"
+            timeline_search: "output/twitter/search/timelines"
     psql:
         twitter:
             schema: "twitter"
