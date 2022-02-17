@@ -98,9 +98,6 @@ class APIListener():
                 self.insert_cmds['ref'] = ref_insert_cmd
                 self.insert_fields['ref'] = insert_fields
 
-        pprint(self.insert_cmds)
-        sys.exit()
-
         # Params of request
         self.params = dict()
 
