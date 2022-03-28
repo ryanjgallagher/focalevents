@@ -250,7 +250,7 @@ def main(event, delete_rules, config_f, append, verbose, update_interval,
         stream.conn.close()
         if verbose:
             print('\nClosed writing and committed changes to database')
-            now = datetime.now().strftime("%Y-%m-%d %I:%m%p")
+            now = datetime.now().strftime("%Y-%m-%d %I:%M%p")
             print(f"\nStream finished at {now}")
             print(f"\n{stream.n_tweets_total:,} returned by the API\n")
 
