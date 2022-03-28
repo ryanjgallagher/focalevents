@@ -714,6 +714,7 @@ def main(event, config_f, max_results_per_page, get_counts, granularity,
                            write_count_files=write_count_files,
                            verbose=verbose,
                            update_interval=update_interval)
+
     if get_counts:
         search.count()
     else:
@@ -722,17 +723,18 @@ def main(event, config_f, max_results_per_page, get_counts, granularity,
     search.conn.commit()
     search.cur.close()
     search.conn.close()
+
     # Last file gets closed during counting
     if not get_counts:
         search.out_json_f.close()
 
     if verbose and not get_counts:
         print('Closed writing and committed changes to database')
-        now = datetime.now().strftime("%Y-%m-%d %I:%m%p")
+        now = datetime.now().strftime("%Y-%m-%d %I:%M%p")
         print(f"\nSearch finished at {now}")
         print(f"\n{search.n_tweets_total:,} tweets returned by API\n")
     elif verbose and get_counts:
-        now = datetime.now().strftime("%Y-%m-%d %I:%m%p")
+        now = datetime.now().strftime("%Y-%m-%d %I:%M%p")
         print(f"\nCounting finished at {now}")
         print(f"Estimated {search.total_query_tweet_count:,} tweets across all queries\n")
 
