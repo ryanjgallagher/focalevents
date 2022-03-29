@@ -742,7 +742,7 @@ def main(event, config_f, max_results_per_page, get_counts, granularity,
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Twitter archive search")
     parser.add_argument("event", type=str)
-    parser.add_argument("-config", type=str, default="config.yaml")
+    parser.add_argument("-config_f", type=str, default="config.yaml")
     parser.add_argument("-max_results_per_page", type=int, default=500)
     parser.add_argument("-user_ids_f", type=str, default=None)
     parser.add_argument("-convo_ids_f", type=str, default=None)
